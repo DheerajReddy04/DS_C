@@ -1,0 +1,116 @@
+#include <stdio.h>  
+#include <stdlib.h>  
+
+#define MAX_EDGES 1000  
+
+// Define a structure for an Edge in the graph
+typedef struct Edge {  
+    int src, dest, weight;  
+} Edge;  
+
+// Define a structure for the Graph
+typedef struct Graph {  
+    int V, E;  
+    Edge edges[MAX_EDGES];  
+} Graph;  
+
+// Define a structure for a subset used in Union-Find
+typedef struct Subset {  
+    int parent, rank;  
+} Subset;  
+
+// Function to create a new graph with V vertices and E edges
+Graph* createGraph(int V, int E) {  
+    Graph* graph = (Graph*) malloc(sizeof(Graph));  
+    graph->V = V;  
+    graph->E = E;  
+    return graph;  
+}  
+
+// Function to find the set to which an element belongs (using Path Compression)
+int find(Subset subsets[], int i) {  
+    if (subsets[i].parent != i) {  
+        subsets[i].parent = find(subsets, subsets[i].parent);  
+    }  
+    return subsets[i].parent;  
+}  
+
+// Function to perform Union of two sets (using Union by Rank)
+void Union(Subset subsets[], int x, int y) {  
+    int xroot = find(subsets, x);  
+    int yroot = find(subsets, y);  
+
+    if (subsets[xroot].rank < subsets[yroot].rank) {  
+        subsets[xroot].parent = yroot;  
+    } else if (subsets[xroot].rank > subsets[yroot].rank) {  
+        subsets[yroot].parent = xroot;  
+    } else {  
+        subsets[yroot].parent = xroot;  
+        subsets[xroot].rank++;  
+    }  
+}  
+
+// Comparison function for qsort to sort edges based on their weights
+int compare(const void* a, const void* b) {  
+    Edge* a_edge = (Edge*) a;  
+    Edge* b_edge = (Edge*) b;  
+    return a_edge->weight - b_edge->weight;  
+}  
+
+// Function to find the Minimum Spanning Tree using Kruskal's algorithm
+void kruskalMST(Graph* graph) {  
+    Edge mst[graph->V];  
+    int e = 0, i = 0;  
+
+    // Sort the edges in non-decreasing order of their weights
+    qsort(graph->edges, graph->E, sizeof(Edge), compare);  
+
+    // Allocate memory for subsets used in Union-Find
+    Subset* subsets = (Subset*) malloc(graph->V * sizeof(Subset));  
+    for (int v = 0; v < graph->V; ++v) {  
+        subsets[v].parent = v;  
+        subsets[v].rank = 0;  
+    }  
+
+    // Iterate through all sorted edges
+    while (e < graph->V - 1 && i < graph->E) {  
+        Edge next_edge = graph->edges[i++];  
+
+        // Find the sets to which the source and destination vertices belong
+        int x = find(subsets, next_edge.src);  
+        int y = find(subsets, next_edge.dest);  
+
+        // If including this edge doesn't cause a cycle, add it to the MST
+        if (x != y) {  
+            mst[e++] = next_edge;  
+            Union(subsets, x, y);  
+        }  
+    }  
+
+    // Print the Minimum Spanning Tree
+    printf("Minimum Spanning Tree:\n");  
+    for (i = 0; i < e; ++i) {  
+        printf("(%d, %d) -> %d\n", mst[i].src, mst[i].dest, mst[i].weight);  
+    }  
+}  
+
+// Main function
+int main() {  
+    int V, E;  
+    printf("Enter number of vertices and edges: ");  
+    scanf("%d %d", &V, &E);  
+
+    // Create a graph with V vertices and E edges
+    Graph* graph = createGraph(V, E);  
+
+    // Input edges and their weights
+    printf("Enter edges and their weights:\n");  
+    for (int i = 0; i < E; ++i) {  
+        scanf("%d %d %d", &graph->edges[i].src, &graph->edges[i].dest, &graph->edges[i].weight);  
+    }  
+
+    // Find and print the Minimum Spanning Tree
+    kruskalMST(graph);  
+
+    return 0;  
+}

@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define size 100
+
+struct queue {
+    int list[size];
+    int front;
+    int rear;
+};
+
+void enqueue(struct queue *, int);
+int dequeue(struct queue *);
+void display(struct queue);
+
+int main() {
+    struct queue q;
+    q.front = 0;
+    q.rear = -1;
+    int op, x, n;
+    while(1) {
+        printf("1. Enqueue\n2. Dequeue\n3. Display\n4. Exit\nEnter your choice\n");
+        scanf("%d",&op);
+        switch(op){
+            case 1: printf("Enter the item to be enqueued\n");
+            scanf("%d",&x);
+            enqueue(&q, x);
+            break;
+            case 2: n=dequeue(&q);
+            if(n != -1) {
+                printf("The Dequeued item is %d\n",n);
+            }
+            break;
+            case 3: display(q);
+            break;
+            case 4: return 0;
+            break;
+            default: printf("Enter a valid number.\n");
+        }
+    }
+    return 0;
+}
+
+void enqueue(struct queue * q, int x) {
+    if(q->rear == size-1) {
+        printf("Overflow!\n");
+    }
+    else{
+        q->list[++q->rear] = x;
+        printf("Item succesfully enqueued!\n");
+    }
+}
+
+int dequeue(struct queue * q) {
+    if(q->front > q->rear) {
+        printf("Underflow!\n");
+        return -1;
+    }
+    else{
+        return q->list[q->front++];
+    }
+}
+
+void display(struct queue q) {
+    int i;
+    if(q.front > q.rear) {
+        printf("No elements in list!\n");
+    }
+    else{
+        for(i = q.front;i<q.rear;i++) {
+            printf("%d\t",q.list[i]);
+        }
+        printf("\n");
+    }
+} 

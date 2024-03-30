@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define size 100
+
+struct stack {
+    char list[size];
+    int top;
+}s;
+
+void push(char x) {
+    if(s.top == (size-1)) 
+    printf("Overflow!\n");
+    else
+    s.list[++s.top] = x;
+}
+
+void pop() {
+    if(s.top == -1) 
+    printf("Stack is empty!\n");
+    else
+    s.top = s.top-1;
+}
+
+int checkpair(char val1,char val2) {
+    return ((val1 == '(' && val2 == ')') || (val1 == '[' && val2 == ']') || (val1 == '{' && val2 == '}'));
+}
+
+int checkbalanced(char expr[],int len) {
+    for(int i = 0; i<len;i++){
+        if(expr[i] == '(' || expr[i] == '[' || expr[i] == '{')
+        push(expr[i]);
+        else{
+            if(s.top == -1)
+            return 0;
+            else if(checkpair(s.list[s.top],expr[i])){
+                pop();
+                continue; // when we pop, len decreases by 1, so to reach last character, we continue the next iteration.(neglecting below code).
+            }
+	    printf("%c doesnt match with %c.\n",s.list[s.top],expr[i]);
+            return 0; // else if condiion was false meaning the top of stack ex ( and expr[i] ex } are not equal.
+        }
+    }
+    return 1; // if the code reached here, it means that all the elements in the stack are popped and it is a balanced parentheses.
+}
+
+int main() {
+    char exp[size];
+    printf("Enter the Expression.\n");
+    scanf("%s",exp);
+    int len;
+    s.top = -1;
+    len = strlen(exp);
+    checkbalanced(exp,len)? printf("Balanced\n") : printf("Not Balanced\n");
+    return 0;
+}

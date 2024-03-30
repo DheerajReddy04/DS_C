@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int data;
+    struct node *next;
+};
+struct node *top = NULL;
+
+void push();
+void pop();
+void display();
+
+void main() {
+    while(1) {
+        int choice;
+        printf("1.Push \n2. Pop\n3. Display\n4. Exit\n");
+        printf("Enter your choice\n");
+        scanf("%d",&choice);
+        switch(choice){
+            case 1: push();
+            break;
+            case 2: pop();
+            break;
+            case 3: display();
+            break;
+            case 4: exit(0);
+            default: "Enter a vlaid choice.\n";
+        }
+    }
+}
+
+void push() {
+    int x;
+    printf("Enter the item to be pushed.\n");
+    scanf("%d",&x);
+    struct node *newnode;
+    newnode = (struct node*)malloc(sizeof(struct node));
+    newnode->data = x;
+    if(top == NULL)
+    newnode->next = NULL;
+    else
+    newnode->next=top;
+    top = newnode;
+    printf("Item pushed.\n");
+}
+
+void pop() {
+    if(top == NULL) {
+        printf("Underflow!\n");
+    }
+    else {
+        struct node *temp = top;
+        printf("Deleted node: %d\n",temp->data);
+        top = temp->next;
+        free(temp);
+    }
+}
+
+void display() {
+    if(top == NULL) {
+        printf("No elements to display.\n");
+    }
+    else{
+        struct node *temp = top;
+        while(temp->next != NULL) {
+            printf("%d\n",temp->data);
+            temp = temp->next;
+        }
+        printf("%d\n",temp->data);
+    }
+}
